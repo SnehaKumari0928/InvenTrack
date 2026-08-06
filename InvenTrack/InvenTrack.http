@@ -1,6 +1,24 @@
-@InvenTrack_HostAddress = http://localhost:5165
+@InvenTrack_HostAddress = https://localhost:7019
 
 GET {{InvenTrack_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+GET {{InvenTrack_HostAddress}}/api/product
+
+###
+
+POST {{InvenTrack_HostAddress}}/api/product
+Content-Type: application/json
+
+{
+  "name": "HP Pavilion 15",
+  "sku": "HP-LAP-006",
+  "price": 58999.99,
+  "stockQuantity": 25,
+  "supplierId": 1,
+  "supplier":{}
+}
 
 ###

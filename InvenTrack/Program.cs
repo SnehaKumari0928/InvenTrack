@@ -1,12 +1,17 @@
 
 using InvenTrack.Data;
+using InvenTrack.Repositories.Implementation;
+using InvenTrack.Repositories.Interfaces;
+using InvenTrack.Services.Implementation;
+using InvenTrack.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace InvenTrack
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async  static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +23,26 @@ namespace InvenTrack
                     builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddControllers();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            ReferenceHandler.IgnoreCycles;
+    });
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<AppDbContext>();
+
+                await DataSeeder.SeedAsync(context);
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
