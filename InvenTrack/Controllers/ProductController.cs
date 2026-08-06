@@ -1,4 +1,5 @@
-﻿using InvenTrack.Entities;
+﻿using InvenTrack.DTOs.Product;
+using InvenTrack.Entities;
 using InvenTrack.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +19,48 @@ namespace InvenTrack.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllProducts([FromQuery] int? supplierId,
+            [FromQuery] int? lowStock, 
+            [FromQuery] string? search
+            )
         {
 
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetAllProductsAsync(supplierId,lowStock,search);
             return  Ok(products);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Product product)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var createdProduct = await _productService.CreateProductAsync(product);
-            return CreatedAtAction(nameof(Get), new { id = createdProduct.Id }, createdProduct);
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null) return NotFound();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] CreateProductDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var createdProduct = await _productService.CreateProductAsync(dto);
+
+            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateProductDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            await _productService.UpdateProductAsync(id, dto);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
         }
     }
 }

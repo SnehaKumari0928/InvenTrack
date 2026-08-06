@@ -24,7 +24,9 @@ namespace InvenTrack
             });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
