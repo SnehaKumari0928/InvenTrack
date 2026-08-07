@@ -40,7 +40,6 @@ namespace InvenTrack.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var createdProduct = await _productService.CreateProductAsync(dto);
 
@@ -50,7 +49,6 @@ namespace InvenTrack.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateProductDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             await _productService.UpdateProductAsync(id, dto);
             return NoContent();

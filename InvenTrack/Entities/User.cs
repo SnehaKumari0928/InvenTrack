@@ -10,5 +10,6 @@ namespace InvenTrack.Entities
         public string PasswordHash { get; set; }
         public UserRole Role { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

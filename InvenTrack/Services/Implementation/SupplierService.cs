@@ -50,7 +50,7 @@ namespace InvenTrack.Services.Implementation
         public async Task UpdateSupplierAsync(int Id, UpdateSupplierDto dto)
         {
             var supplier = await _supplierRepository.GetSupplierByIdAsync(Id);
-            if (supplier == null) throw new InvalidOperationException("Supplier not found");
+            if (supplier == null) throw new Exceptions.NotFoundException("Supplier not found");
 
             supplier.Name = dto.Name;
             supplier.Email = dto.Email;
@@ -64,7 +64,7 @@ namespace InvenTrack.Services.Implementation
         public async Task DeleteSupplierAsync(int SupplierId)
         {
             var supplier = await _supplierRepository.GetSupplierByIdAsync(SupplierId);
-            if (supplier == null) throw new InvalidOperationException("Supplier not found");
+            if (supplier == null) throw new Exceptions.NotFoundException("Supplier not found");
 
             await _supplierRepository.DeleteSupplierAsync(supplier);
         }

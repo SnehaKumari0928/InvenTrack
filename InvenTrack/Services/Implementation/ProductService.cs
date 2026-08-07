@@ -45,10 +45,9 @@ namespace InvenTrack.Services.Implementation
                 SupplierId = dto.SupplierId
             };
 
-            // ensure supplier exists
             var supplier = await _supplierRepository.GetSupplierByIdAsync(dto.SupplierId);
             if (supplier == null)
-                throw new InvalidOperationException("Supplier not found");
+                throw new Exceptions.NotFoundException("Supplier not found");
 
             var createdProduct = await _productRepository.CreateProductAsync(product);
 
@@ -68,11 +67,11 @@ namespace InvenTrack.Services.Implementation
         {
             var product = await _productRepository.GetProductByIdAsync(Id);
             if (product == null)
-                throw new InvalidOperationException("Product not found");
-            // ensure supplier exists
+                throw new Exceptions.NotFoundException("Product not found");
+
             var supplier = await _supplierRepository.GetSupplierByIdAsync(dto.SupplierId);
             if (supplier == null)
-                throw new InvalidOperationException("Supplier not found");
+                throw new Exceptions.NotFoundException("Supplier not found");
 
             product.Name = dto.Name;
             product.SKU = dto.SKU;
@@ -87,7 +86,7 @@ namespace InvenTrack.Services.Implementation
         {
             var product = await _productRepository.GetProductByIdAsync(ProductId);
             if (product == null)
-                throw new InvalidOperationException("Product not found");
+                throw new Exceptions.NotFoundException("Product not found");
 
             await _productRepository.DeleteProductAsync(product);
         }

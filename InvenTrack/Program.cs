@@ -1,10 +1,14 @@
 
 using InvenTrack.Data;
+using InvenTrack.Middleware;
 using InvenTrack.Repositories.Implementation;
 using InvenTrack.Repositories.Interfaces;
 using InvenTrack.Services.Implementation;
 using InvenTrack.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace InvenTrack
@@ -22,6 +26,27 @@ namespace InvenTrack
                 options.UseNpgsql(
                     builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    builder.Configuration["Jwt:Key"]!
+                ))
+        };
+    });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
@@ -52,8 +77,9 @@ namespace InvenTrack
                 app.MapOpenApi();
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

@@ -22,3 +22,7 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{InvenTrack_HostAddress}}/api/supplier
+
+###
