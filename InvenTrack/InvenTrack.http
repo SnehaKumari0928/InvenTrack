@@ -26,3 +26,28 @@ Content-Type: application/json
 GET {{InvenTrack_HostAddress}}/api/supplier
 
 ###
+
+POST {{InvenTrack_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "email": "john.doe@example.com",
+  "password": "John@12345"
+}
+
+###
+
+POST {{InvenTrack_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+   "email": "john.doe@example.com",
+  "password": "John@12345"
+}
+
+###
+
+GET {{InvenTrack_HostAddress}}/api/user
+
+###

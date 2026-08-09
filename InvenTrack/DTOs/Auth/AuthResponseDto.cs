@@ -1,4 +1,5 @@
-﻿using InvenTrack.Entities;
+﻿using InvenTrack.DTOs.User;
+using InvenTrack.Entities;
 
 namespace InvenTrack.DTOs.Auth
 {
@@ -7,6 +8,6 @@ namespace InvenTrack.DTOs.Auth
 
         public string AccessToken { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
-        public AuthResponseDto User { get; set; }
+        public UserResponseDto User { get; set; }
     }
 }

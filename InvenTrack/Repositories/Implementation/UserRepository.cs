@@ -43,10 +43,7 @@ namespace InvenTrack.Repositories.Implementation
         public async Task<User> GetByEmailAsync(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-            {
-                throw new Exception($"User with email {email} not found.");
-            }
+            
             return user;
         }
     }

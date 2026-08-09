@@ -3,6 +3,7 @@ using InvenTrack.Data;
 using InvenTrack.Middleware;
 using InvenTrack.Repositories.Implementation;
 using InvenTrack.Repositories.Interfaces;
+using InvenTrack.Security;
 using InvenTrack.Services.Implementation;
 using InvenTrack.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,10 +49,31 @@ namespace InvenTrack
         };
     });
 
+            // Allow the React frontend (development) to call this API
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactDev", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ISupplierService, SupplierService>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -71,7 +93,6 @@ namespace InvenTrack
                 await DataSeeder.SeedAsync(context);
             }
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -79,6 +100,9 @@ namespace InvenTrack
 
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowReactDev");
+
             app.UseAuthentication();
             app.UseAuthorization();
 

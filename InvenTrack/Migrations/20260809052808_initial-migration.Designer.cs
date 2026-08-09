@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenTrack.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260806045933_initial-migration")]
+    [Migration("20260809052808_initial-migration")]
     partial class initialmigration
     {
         /// <inheritdoc />
@@ -165,6 +165,43 @@ namespace InvenTrack.Migrations
                         });
                 });
 
+            modelBuilder.Entity("InvenTrack.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
+                });
+
             modelBuilder.Entity("InvenTrack.Entities.Supplier", b =>
                 {
                     b.Property<int>("Id")
@@ -291,6 +328,17 @@ namespace InvenTrack.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("InvenTrack.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("InvenTrack.Entities.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("InvenTrack.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
@@ -309,6 +357,8 @@ namespace InvenTrack.Migrations
             modelBuilder.Entity("InvenTrack.Entities.User", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }
