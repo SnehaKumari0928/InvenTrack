@@ -94,7 +94,6 @@ namespace InvenTrack.Services.Implementation
 
             var user = refreshToken.User;
 
-            // revoke the used refresh token to prevent reuse
             refreshToken.IsRevoked = true;
             await _refreshTokenRepository.UpdateAsync(refreshToken);
 
@@ -110,7 +109,6 @@ namespace InvenTrack.Services.Implementation
             if (token == null)
                 return;
 
-            // mark the refresh token as revoked so it cannot be reused
             token.IsRevoked = true;
             token.UpdatedAt = DateTime.UtcNow;
 

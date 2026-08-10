@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenTrack.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260809052808_initial-migration")]
+    [Migration("20260810034920_initial-migration")]
     partial class initialmigration
     {
         /// <inheritdoc />

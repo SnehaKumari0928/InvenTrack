@@ -23,7 +23,8 @@ export function AuthProvider({ children }) {
   };
 
   const clear = () => {
-    setAccessToken(null); setRefreshToken(null); setUser(null);
+    setAccessToken(null); 
+    setRefreshToken(null); setUser(null);
     localStorage.removeItem(ACCESS);
     localStorage.removeItem(REFRESH);
     localStorage.removeItem(USER);
