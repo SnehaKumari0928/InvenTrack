@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="InvenTrack.Tests/InvenTrack.Tests.csproj" Id="03d77801-e425-492f-8772-90cb79a7f800" />
   <Project Path="InvenTrack/InvenTrack.csproj" />
 </Solution>
