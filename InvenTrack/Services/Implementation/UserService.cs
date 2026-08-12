@@ -43,7 +43,7 @@ namespace InvenTrack.Services.Implementation
         {
             var existing = await _userRepository.GetByEmailAsync(email);
             if (existing != null)
-                throw new Exceptions.BadHttpRequestException("Email is already registered.");
+                throw new Exceptions.BadRequestException("Email is already registered.");
 
             var user = new Entities.User
             {
