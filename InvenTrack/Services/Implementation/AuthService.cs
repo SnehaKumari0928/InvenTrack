@@ -25,32 +25,7 @@ namespace InvenTrack.Services.Implementation
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<AuthResponseDto> RegisterAsync(
-           RegisterRequestDto dto)
-        {
-            var existingUser =
-                await _userRepository.GetByEmailAsync(dto.Email);
-
-            if (existingUser != null)
-            {
-                throw new BadHttpRequestException(
-                    "Email is already registered.");
-            }
-
-            var user = new User
-            {
-                UserName = dto.Username,
-                Email = dto.Email,
-                PasswordHash =
-                    BCrypt.Net.BCrypt.HashPassword(dto.Password),
-
-                Role = UserRole.Staff
-            };
-
-            await _userRepository.CreateUserAsync(user);
-
-            return await GenerateAuthResponseAsync(user);
-        }
+        // Registration handled by Admin via UserService.CreateStaffAsync
 
 
         public async Task<AuthResponseDto> LoginAsync(

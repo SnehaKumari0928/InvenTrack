@@ -37,22 +37,26 @@ namespace InvenTrack.Tests.Services
         [Fact]
         public async Task RegisterAsync_ShouldReturnAuthResponseDto_WhenValidInput()
         {
-
             // Arrange
             var registerRequest = new RegisterRequestDto
             {
                 Username = "testuser",
                 Email = "testuser@example.com",
                 Password = "Password123!"
-
             };
 
-            _userRepositoryMock.Setup(repo => repo.GetByEmailAsync(registerRequest.Email))
+
+            // No existing user with this email
+            _userRepositoryMock
+                .Setup(x => x.GetByEmailAsync(registerRequest.Email))
                 .ReturnsAsync((User?)null);
-              
-            _userRepositoryMock.Setup(repo => repo.CreateUserAsync(It.IsAny<User>()))
+
+            // User is successfully created
+            _userRepositoryMock
+                .Setup(x => x.CreateUserAsync(It.IsAny<User>()))
                 .ReturnsAsync((User user) => user);
 
+            // JWT token setup
             _jwtServiceMock
                 .Setup(x => x.GenerateAccessToken(It.IsAny<User>()))
                 .Returns("access_token");
@@ -61,39 +65,56 @@ namespace InvenTrack.Tests.Services
                 .Setup(x => x.GenerateRefreshToken())
                 .Returns("refresh_token");
 
+            // Refresh token is successfully saved
             _refreshTokenRepositoryMock
                 .Setup(x => x.AddAsync(It.IsAny<RefreshToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
-
             var result = await _authService.RegisterAsync(registerRequest);
 
-            // Assert
-            var expectedResponse = new AuthResponseDto
-            {
-                AccessToken = "access_token",
-                RefreshToken = "refresh_token",
-                User = new UserResponseDto
-                {
-                    Username = "testuser",
-                    Email = "testuser@example.com",
-                    Role = UserRole.Staff
-                }
-            };
+            // Assert - Response
+            result.Should().NotBeNull();
 
-            result.Should().BeEquivalentTo(expectedResponse);
+            result.AccessToken.Should().Be("access_token");
+            result.RefreshToken.Should().Be("refresh_token");
 
+            result.User.Should().NotBeNull();
+            result.User.Username.Should().Be(registerRequest.Username);
+            result.User.Email.Should().Be(registerRequest.Email);
+            result.User.Role.Should().Be(UserRole.Staff);
+
+            // Verify - User was checked
             _userRepositoryMock.Verify(
-                x => x.GetByEmailAsync(registerRequest.Email), Times.Once);
+                x => x.GetByEmailAsync(registerRequest.Email),
+                Times.Once);
+
+            // Verify - Correct user was created
             _userRepositoryMock.Verify(
-                x => x.CreateUserAsync(It.IsAny<User>()), Times.Once);
+                x => x.CreateUserAsync(It.Is<User>(user =>
+                    user.UserName == registerRequest.Username &&
+                    user.Email == registerRequest.Email &&
+                    user.Role == UserRole.Staff &&
+                    BCrypt.Net.BCrypt.Verify(
+                        registerRequest.Password,
+                        user.PasswordHash))),
+                Times.Once);
+
+            // Verify - Access token generated
             _jwtServiceMock.Verify(
-                x => x.GenerateAccessToken(It.IsAny<User>()), Times.Once);
+                x => x.GenerateAccessToken(It.IsAny<User>()),
+                Times.Once);
+
+            // Verify - Refresh token generated
             _jwtServiceMock.Verify(
-                x => x.GenerateRefreshToken(), Times.Once);
+                x => x.GenerateRefreshToken(),
+                Times.Once);
+
+            // Verify - Refresh token saved
             _refreshTokenRepositoryMock.Verify(
-                x => x.AddAsync(It.IsAny<RefreshToken>()), Times.Once);
+                x => x.AddAsync(It.Is<RefreshToken>(token =>
+                    token.Token == "refresh_token")),
+                Times.Once);
         }
 
 
@@ -101,7 +122,21 @@ namespace InvenTrack.Tests.Services
         [Fact]
         public async Task RegisterAsync_ShouldThrowException_WhenEmailAlreadyExists()
         {
+            // Arrange
 
+            var registerRequest = new RegisterRequestDto
+            {
+                Username = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            var existingUser = new User
+            {
+                UserName = "existinguser",
+                Email = registerRequest.Email,
+                Role
+            }
         }
     }
 }

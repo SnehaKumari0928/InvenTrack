@@ -33,6 +33,14 @@ namespace InvenTrack.Controllers
 
             return Ok(user);
         }
+
+        [HttpPost("create-staff")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateStaff([FromBody] DTOs.Auth.RegisterRequestDto dto)
+        {
+            var created = await _userService.CreateStaffAsync(dto.Username, dto.Email, dto.Password);
+            return CreatedAtAction(nameof(GetUserById), new { id = created.Id }, created);
+        }
     }
 }
 

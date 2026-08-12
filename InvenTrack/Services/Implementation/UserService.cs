@@ -38,5 +38,30 @@ namespace InvenTrack.Services.Implementation
                 Role = user.Role,
             };
         }
+
+        public async Task<UserResponseDto> CreateStaffAsync(string username, string email, string password)
+        {
+            var existing = await _userRepository.GetByEmailAsync(email);
+            if (existing != null)
+                throw new Exceptions.BadHttpRequestException("Email is already registered.");
+
+            var user = new Entities.User
+            {
+                UserName = username,
+                Email = email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                Role = Enums.UserRole.Staff
+            };
+
+            var created = await _userRepository.CreateUserAsync(user);
+
+            return new UserResponseDto
+            {
+                Id = created.Id,
+                Username = created.UserName,
+                Email = created.Email,
+                Role = created.Role
+            };
+        }
     }
 }

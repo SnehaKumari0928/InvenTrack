@@ -2,6 +2,7 @@
 using InvenTrack.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InvenTrack.Controllers
 {
@@ -16,14 +17,10 @@ namespace InvenTrack.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
-        {
-            var result = await _authService.RegisterAsync(dto);
-            return Ok(result);
-        }
+        // Registration is handled by Admin via UserController
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
             var result = await _authService.LoginAsync(dto);
@@ -31,6 +28,7 @@ namespace InvenTrack.Controllers
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto dto)
         {
             var result = await _authService.RefreshTokenAsync(dto);
@@ -38,6 +36,7 @@ namespace InvenTrack.Controllers
         }
 
         [HttpPost("logout")]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenRequestDto dto)
         {
             await _authService.LogoutAsync(dto.RefreshToken);

@@ -7,6 +7,7 @@ namespace InvenTrack.Services.Interfaces
 
         Task<ICollection<UserResponseDto>> GetAllUsersAsync();
         Task<UserResponseDto> GetUserByIdAsync(int id);
+        Task<UserResponseDto> CreateStaffAsync(string username, string email, string password);
 
     }
 }
