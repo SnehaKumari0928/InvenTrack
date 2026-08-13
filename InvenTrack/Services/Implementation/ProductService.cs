@@ -105,5 +105,8 @@ namespace InvenTrack.Services.Implementation
                 SupplierName = product.Supplier?.Name
             };
         }
+
+
+        
     }
 }
