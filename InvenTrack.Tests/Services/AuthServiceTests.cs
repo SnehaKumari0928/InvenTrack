@@ -117,6 +117,7 @@ namespace InvenTrack.Tests.Services
                 .Setup(x => x.GetByEmailAsync(request.Email))
                 .ReturnsAsync((User)null);
 
+
             Func<Task> act = async () => await _authService.LoginAsync(request);
 
             await act.Should()
